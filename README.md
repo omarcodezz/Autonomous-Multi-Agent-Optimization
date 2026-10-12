@@ -135,3 +135,52 @@ const uint32_t SEED = 12345;
 ```
 
 Keeping the same seed allows algorithm changes to be evaluated under consistent simulation conditions. Different seeds can be used to evaluate performance across different environments.
+
+## Project Structure
+
+The project is organized around a C++ simulation framework and a custom foraging algorithm.
+
+```text
+CAV-EIC-Y1-Dev-Challenge/
+├── include/
+│   └── antworld.h
+├── src/
+│   ├── antworld.cpp
+│   ├── applicant_solution.cpp
+│   ├── main.cpp
+│   └── useable_functions.cpp
+├── CMakeLists.txt
+└── README.md
+```
+
+### Key Components
+
+| File | Description |
+|---|---|
+| `applicant_solution.cpp` | Custom multi-agent coordination and optimization algorithm |
+| `antworld.cpp` | Simulation initialization, scoring, and agent lifecycle management |
+| `useable_functions.cpp` | Agent movement, food detection, and pheromone operations |
+| `main.cpp` | Simulation entry point and execution loop |
+| `antworld.h` | Core simulation classes, data structures, and function declarations |
+| `CMakeLists.txt` | Build configuration |
+
+*The structure above shows the principal project files; additional framework utilities and tests may be present in the complete repository.*
+
+## My Contributions
+
+My primary contribution was designing and implementing the foraging strategy in `applicant_solution.cpp`, using the provided EcoCAR simulation framework.
+
+Key contributions include:
+
+- **Multi-Agent Coordination:** Developed an energy-based task allocation strategy to coordinate exploration and food retrieval across multiple autonomous agents.
+- **Exploration Optimization:** Implemented structured grid scanning with energy-cost prioritization to identify food locations efficiently.
+- **Resource-Constrained Planning:** Integrated terrain-dependent shortest-path costs into feasibility checks for agent assignments.
+- **Greedy Task Assignment:** Developed a colony-wide greedy selection algorithm to prioritize low-cost food retrievals while preventing duplicate assignments.
+- **Relay-Based Retrieval:** Implemented a fallback strategy that moves food closer to home when a direct return trip is infeasible.
+- **Iterative Optimization:** Refined the algorithm through repeated simulation testing, debugging, and performance evaluation.
+
+### Framework Attribution
+
+The underlying simulation environment, including agent movement, terrain generation, food detection, scoring, and pathfinding utilities, was provided as part of the EcoCAR Development Challenge.
+
+My implementation focuses on the decision-making logic that coordinates these existing components to improve food collection efficiency.
