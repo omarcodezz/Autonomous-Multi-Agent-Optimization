@@ -184,3 +184,16 @@ Key contributions include:
 The underlying simulation environment, including agent movement, terrain generation, food detection, scoring, and pathfinding utilities, was provided as part of the EcoCAR Development Challenge.
 
 My implementation focuses on the decision-making logic that coordinates these existing components to improve food collection efficiency.
+
+## Key Takeaways
+
+This challenge provided hands-on experience in designing and optimizing algorithms for autonomous multi-agent systems operating under resource constraints.
+
+Through iterative development, I strengthened my understanding of:
+
+- **Algorithm Design:** Balancing computational efficiency with practical resource limitations.
+- **Optimization:** Improving performance through greedy assignment, path planning, and energy-aware decision-making.
+- **Problem-Solving:** Developing alternative strategies when direct solutions became infeasible.
+- **Software Development:** Using C++, CMake, Git, and systematic testing to develop and refine a working solution.
+
+The project reinforced the importance of evaluating trade-offs, testing assumptions, and continuously improving algorithms based on measurable results.
