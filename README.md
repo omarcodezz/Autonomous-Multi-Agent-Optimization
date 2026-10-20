@@ -1,85 +1,101 @@
-# Autonomous-Multi-Agent-Optimization
-# EcoCAR C++ Development Challenge
+# Autonomous Multi-Agent Optimization
+
+**EcoCAR C++ Development Challenge**
+
+An energy-aware multi-agent coordination algorithm for autonomous exploration and resource retrieval in a terrain-constrained simulation environment.
 
 ## Project Overview
 
-This project was completed as part of the **EcoCAR Connected and Automated Vehicle (CAV) Development Challenge**. The objective was to develop an efficient C++ algorithm to coordinate a colony of autonomous agents (ants) navigating a grid-based environment to locate, collect, and return food to a central home location.
+This project was developed as part of the **EcoCAR Connected and Automated Vehicle (CAV) Development Challenge**. The objective was to implement an efficient C++ algorithm to coordinate a colony of autonomous agents (ants) navigating a grid-based environment to locate, collect, and return food to a central home location.
 
-Each ant operates with limited energy, while movement costs vary depending on the terrain. The challenge required developing a strategy that balances exploration, resource allocation, and energy-efficient path planning to maximize the amount of food successfully retrieved.
+Each agent operates with limited energy, and movement costs vary with terrain elevation. The challenge required balancing exploration, resource allocation, and energy-efficient path planning to maximize successful food retrieval.
 
-My solution uses a multi-stage approach combining **energy-based task allocation, structured grid exploration, shortest-path calculations, greedy assignment optimization, and a relay-based retrieval strategy** for food that cannot be returned directly.
+My solution combines **energy-based task allocation, structured grid exploration, shortest-path cost estimation, global greedy assignment, and relay-based retrieval**.
 
-The project demonstrates practical applications of algorithm design, resource management, and autonomous multi-agent coordination using C++.
+## Performance & Validation
+
+| Metric | Result |
+|---|---|
+| Best recorded simulation score | 38 |
+| Framework unit tests | 40/40 passed |
+| Programming language | C++20 |
+| Default simulation seed | 12345 |
+| Maximum simulation steps | 1,000 |
+
+The solution was refined through iterative simulation testing, debugging, and algorithm optimization.
+
+The results above reflect previously recorded development runs and have not been independently reproduced for this publication.
+
 ## Algorithm Design
-
-The solution follows a multi-stage strategy designed to maximize food retrieval while accounting for limited agent energy and terrain-dependent movement costs.
 
 ### 1. Energy-Based Task Allocation
 
-- Rank all ants by their available energy in descending order.
-- Assign the higher-energy half to exploration and the remaining ants to collection roles.
-- Prioritize agents with greater energy reserves for exploration across the map.
+- Rank agents by available energy in descending order.
+- Assign the higher-energy half of the colony to initial exploration, with the remaining agents designated as collectors.
+- Prioritize higher-energy agents for exploration to improve their ability to reach scanning locations.
+
+Following initial exploration, the retrieval algorithm evaluates available agents based on their energy and ability to complete food collection tasks.
 
 ### 2. Structured Grid Exploration
 
-- Divide the environment into scanning regions based on each ant's food detection radius.
-- Calculate scanning coordinates to distribute exploration across the grid.
-- Estimate the shortest-path energy cost from the home location to each scanning target.
-- Prioritize lower-cost scanning locations and record discovered food coordinates while avoiding duplicates.
+- Divide the terrain into scanning regions based on the agents' food detection radius.
+- Generate scanning coordinates distributed across the environment.
+- Estimate shortest-path travel costs from home to each scanning location.
+- Prioritize lower-cost scanning targets to reduce exploration energy expenditure.
+- Record discovered food coordinates while preventing duplicate entries.
 
 ### 3. Energy-Aware Path Planning
 
-Movement costs depend on the elevation difference between adjacent terrain cells:
+Movement energy depends on the elevation difference between adjacent terrain cells:
 
 **Movement Cost = 1 + |Elevation Difference|**
 
-The algorithm uses the simulation's shortest-path utility to estimate the energy required for travel.
+The algorithm uses the simulation framework's shortest-path and path-cost utilities to estimate energy requirements.
 
-For each potential food retrieval, it calculates:
+For each candidate retrieval:
 
 **Total Cost = Cost to Food + Cost to Home**
 
-Only assignments where an ant has sufficient energy to complete the round trip are considered feasible.
+Only assignments where an agent has sufficient energy to complete the estimated round trip are considered feasible.
 
 ### 4. Global Greedy Assignment
 
-- Generate all feasible ant–food assignments across the colony.
-- Sort assignments by total estimated energy cost in ascending order.
-- Greedily select the lowest-cost assignments while ensuring each ant and food location is assigned at most once per cycle.
+- Generate feasible agent–food assignments across the colony.
+- Sort candidate assignments by estimated total energy cost.
+- Select the lowest-cost available assignments while preventing duplicate agent or food assignments within a cycle.
 - Execute selected retrievals and return collected food to the home location.
 
-This approach prioritizes energy-efficient retrievals without the computational complexity of finding a globally optimal assignment.
+This greedy strategy favors low-cost retrievals without requiring the computational complexity of globally optimal matching.
 
 ### 5. Relay-Based Food Retrieval
 
-When no direct retrieval is feasible, the algorithm attempts a relay strategy:
+When no direct retrieval assignment is feasible, the algorithm evaluates a relay-based fallback strategy.
 
-- Identify ants capable of reaching food but lacking sufficient energy to return home.
-- Evaluate relay candidates that can exhaust their remaining energy while transporting food toward home.
-- Prioritize candidates capable of carrying food farther before running out of energy.
-- Record the food's new location after it is dropped, allowing another ant to retrieve it in a subsequent cycle.
+- Identify agents with sufficient energy to reach a food location but insufficient energy for a complete return trip.
+- Verify that an agent can exhaust its remaining energy exactly along the return path.
+- Prioritize eligible relay candidates with greater remaining energy after reaching the food.
+- Move the food toward home until the relay agent exhausts its energy.
+- Record the food's new location after the simulation drops it, allowing subsequent retrieval attempts.
 
-This extends the retrieval strategy beyond food that can be collected through a single round trip.
+This strategy extends the range of food that can potentially be recovered while avoiding relay assignments that would leave an agent stranded with unused energy.
 
 ## Technologies Used
 
 | Technology | Purpose |
 |---|---|
-| C++20 | Core algorithm implementation and simulation logic |
-| CMake | Build configuration and project compilation |
-| GCC / G++ | C++ compilation |
-| Git & GitHub | Version control and project documentation |
+| C++20 | Algorithm implementation and simulation integration |
+| CMake | Build configuration and compilation |
+| GCC / G++ | C++ compiler toolchain |
+| Git & GitHub | Version control and documentation |
 | Visual Studio Code | Development and debugging |
 
 ## Building & Running
 
 ### Prerequisites
 
-Ensure the following tools are installed:
-
-- A C++20-compatible compiler (GCC or equivalent)
-- CMake
-- A compatible build tool (such as MinGW Make)
+- CMake 3.20 or newer
+- A C++20-compatible compiler
+- A compatible build system
 
 ### 1. Clone the Repository
 
@@ -88,57 +104,63 @@ git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY.git
 cd YOUR_REPOSITORY
 ```
 
-Replace the URL with your repository's actual GitHub URL.
+Replace the URL with the actual repository URL.
 
 ### 2. Configure the Project
 
-Create a build directory and configure the project using CMake:
-
 ```bash
-mkdir build
-cd build
-cmake .. -G "MinGW Makefiles"
+cmake -S . -B build
 ```
 
-The example above uses MinGW Makefiles on Windows. Other platforms may require a different CMake generator.
+CMake selects an available generator by default. Windows users working with MinGW can explicitly select the `MinGW Makefiles` generator if desired.
 
 ### 3. Compile
 
 ```bash
-cmake --build .
+cmake --build build
 ```
 
 ### 4. Run the Simulation
 
-On Windows, execute the compiled simulation:
+On Windows using a single-configuration generator such as MinGW Makefiles:
 
 ```bash
-./dev_challenge.exe
+./build/dev_challenge.exe
 ```
 
-The program initializes the simulation, executes the colony's foraging strategy, and reports the final score when the game ends.
-
-### 5. Run Unit Tests
+On Linux or macOS:
 
 ```bash
-./antworld_tests.exe
+./build/dev_challenge
 ```
 
-The unit tests validate the functionality of the simulation framework.
+For multi-configuration generators, the executable may be located in a configuration-specific directory such as `build/Debug/`.
+
+The simulation executes the foraging algorithm and reports the final score when the game terminates.
+
+### 5. Run Tests
+
+```bash
+ctest --test-dir build --output-on-failure
+```
+
+The CMake configuration registers the framework test executable with CTest when testing is enabled.
 
 ## Reproducibility
 
-The simulation uses a configurable random seed. By default, `main.cpp` initializes the environment using:
+The simulation uses a configurable random seed. By default, `main.cpp` initializes the environment with:
 
 ```cpp
 const uint32_t SEED = 12345;
 ```
 
-Keeping the same seed allows algorithm changes to be evaluated under consistent simulation conditions. Different seeds can be used to evaluate performance across different environments.
+Using a consistent seed allows algorithm changes to be compared under the same generated environment.
+
+The simulation also enforces a maximum of 1,000 execution steps.
+
+To evaluate different environments, the seed can be modified or randomized.
 
 ## Project Structure
-
-The project is organized around a C++ simulation framework and a custom foraging algorithm.
 
 ```text
 CAV-EIC-Y1-Dev-Challenge/
@@ -149,51 +171,47 @@ CAV-EIC-Y1-Dev-Challenge/
 │   ├── applicant_solution.cpp
 │   ├── main.cpp
 │   └── useable_functions.cpp
+├── test/
+│   └── antworld_tests.cpp
 ├── CMakeLists.txt
 └── README.md
 ```
+
+Additional challenge documentation and configuration files may be included in the repository.
 
 ### Key Components
 
 | File | Description |
 |---|---|
 | `applicant_solution.cpp` | Custom multi-agent coordination and optimization algorithm |
-| `antworld.cpp` | Simulation initialization, scoring, and agent lifecycle management |
-| `useable_functions.cpp` | Agent movement, food detection, and pheromone operations |
-| `main.cpp` | Simulation entry point and execution loop |
-| `antworld.h` | Core simulation classes, data structures, and function declarations |
-| `CMakeLists.txt` | Build configuration |
-
-*The structure above shows the principal project files; additional framework utilities and tests may be present in the complete repository.*
+| `antworld.cpp` | Simulation framework and world management |
+| `useable_functions.cpp` | Agent operations and simulation utilities |
+| `main.cpp` | Simulation entry point |
+| `antworld.h` | Core classes, data structures, and declarations |
+| `antworld_tests.cpp` | Framework tests |
+| `CMakeLists.txt` | Build and testing configuration |
 
 ## My Contributions
 
-My primary contribution was designing and implementing the foraging strategy in `applicant_solution.cpp`, using the provided EcoCAR simulation framework.
+My primary contribution was designing and implementing the colony's decision-making and resource-retrieval strategy in `applicant_solution.cpp`.
 
 Key contributions include:
 
-- **Multi-Agent Coordination:** Developed an energy-based task allocation strategy to coordinate exploration and food retrieval across multiple autonomous agents.
-- **Exploration Optimization:** Implemented structured grid scanning with energy-cost prioritization to identify food locations efficiently.
-- **Resource-Constrained Planning:** Integrated terrain-dependent shortest-path costs into feasibility checks for agent assignments.
-- **Greedy Task Assignment:** Developed a colony-wide greedy selection algorithm to prioritize low-cost food retrievals while preventing duplicate assignments.
-- **Relay-Based Retrieval:** Implemented a fallback strategy that moves food closer to home when a direct return trip is infeasible.
-- **Iterative Optimization:** Refined the algorithm through repeated simulation testing, debugging, and performance evaluation.
+- **Multi-Agent Coordination:** Implemented energy-based role allocation for initial exploration and colony-wide retrieval planning.
+- **Exploration Optimization:** Developed structured scanning targets prioritized by estimated energy cost.
+- **Resource-Constrained Planning:** Incorporated terrain-aware shortest-path costs into assignment feasibility checks.
+- **Greedy Task Assignment:** Implemented cost-based agent–food matching while preventing duplicate assignments.
+- **Relay-Based Retrieval:** Designed a fallback strategy for moving otherwise unreachable food closer to home.
+- **Iterative Optimization:** Refined the solution through simulation testing, debugging, and performance evaluation.
 
 ### Framework Attribution
 
-The underlying simulation environment, including agent movement, terrain generation, food detection, scoring, and pathfinding utilities, was provided as part of the EcoCAR Development Challenge.
+The underlying simulation framework, including terrain generation, agent movement, food detection, scoring, and pathfinding utilities, was provided as part of the EcoCAR Development Challenge.
 
-My implementation focuses on the decision-making logic that coordinates these existing components to improve food collection efficiency.
+My implementation focuses on the autonomous decision-making algorithm that coordinates these components to improve resource collection efficiency.
 
 ## Key Takeaways
 
-This challenge provided hands-on experience in designing and optimizing algorithms for autonomous multi-agent systems operating under resource constraints.
+This project strengthened my understanding of multi-agent coordination, resource-constrained optimization, and practical algorithm design.
 
-Through iterative development, I strengthened my understanding of:
-
-- **Algorithm Design:** Balancing computational efficiency with practical resource limitations.
-- **Optimization:** Improving performance through greedy assignment, path planning, and energy-aware decision-making.
-- **Problem-Solving:** Developing alternative strategies when direct solutions became infeasible.
-- **Software Development:** Using C++, CMake, Git, and systematic testing to develop and refine a working solution.
-
-The project reinforced the importance of evaluating trade-offs, testing assumptions, and continuously improving algorithms based on measurable results.
+It also demonstrated the importance of balancing computational efficiency against solution quality, designing fallback strategies for constrained environments, and validating algorithms through reproducible simulation testing.
