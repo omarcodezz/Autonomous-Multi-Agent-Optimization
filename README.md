@@ -18,7 +18,7 @@ My solution combines **energy-based task allocation, structured grid exploration
 |---|---|
 | Best recorded simulation score | 38 |
 | Framework unit tests | 40/40 passed |
-| Programming language | C++20 |
+| Programming language | C++ |
 | Default simulation seed | 12345 |
 | Maximum simulation steps | 1,000 |
 
@@ -83,7 +83,7 @@ This strategy extends the range of food that can potentially be recovered while 
 
 | Technology | Purpose |
 |---|---|
-| C++20 | Algorithm implementation and simulation integration |
+| C++ | Algorithm implementation and simulation integration |
 | CMake | Build configuration and compilation |
 | GCC / G++ | C++ compiler toolchain |
 | Git & GitHub | Version control and documentation |
